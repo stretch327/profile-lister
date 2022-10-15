@@ -78,7 +78,7 @@ End
 #tag WindowCode
 	#tag Event
 		Sub Opening()
-		  RefreshList
+		  RefreshProfileList
 		End Sub
 	#tag EndEvent
 
@@ -87,6 +87,23 @@ End
 		Function ProfilesCleanup() As Boolean Handles ProfilesCleanup.Action
 		  // find all of the expired profiles and remove them
 		  
+		  Dim md As New MessageDialog
+		  md.CancelButton.Visible = True
+		  md.Message = "Are you sure you want to remove all expired profiles?"
+		  Dim btn As MessageDialogButton = md.ShowModal(Self)
+		  Dim now As Double = DateTime.Now.SecondsFrom1970
+		  If btn = md.ActionButton Then
+		    For i As Integer = 0 To UBound(mProfiles)
+		      If mProfiles(i).ExpirationDate.SecondsFrom1970 < now Then
+		        Try
+		          mProfiles(i).file.MoveTo SpecialFolder.Trash
+		        Catch ex As IOException
+		          mProfiles(i).file.Delete
+		        End Try
+		      End If
+		    Next
+		    RefreshProfileList
+		  End If
 		  Return True
 		  
 		End Function
@@ -94,7 +111,7 @@ End
 
 	#tag MenuHandler
 		Function ProfilesRefresh() As Boolean Handles ProfilesRefresh.Action
-		  RefreshList
+		  RefreshProfileList
 		  Return True
 		  
 		End Function
@@ -102,11 +119,11 @@ End
 
 
 	#tag Method, Flags = &h21
-		Private Sub RefreshList()
+		Private Sub RefreshProfileList()
 		  Try
 		    Dim f As FolderItem = SpecialFolder.UserLibrary.Child("MobileDevice").Child("Provisioning Profiles")
 		    
-		    Dim profiles() As profile
+		    Redim mProfiles(-1)
 		    Dim sortOrder() As Integer
 		    
 		    For Each child As FolderItem In f.Children
@@ -158,7 +175,7 @@ End
 		          p.DevProfile = True
 		        End If
 		        p.file = child
-		        profiles.Add p
+		        mProfiles.Add p
 		        
 		        sortOrder.Add p.ExpirationDate.SecondsFrom1970
 		      Catch ex As NilObjectException
@@ -170,23 +187,28 @@ End
 		      End Try
 		    Next
 		    
-		    sortOrder.SortWith(profiles)
+		    sortOrder.SortWith(mProfiles)
 		    
 		    listbox1.RemoveAllRows
 		    
-		    For i As Integer = 0 To UBound(profiles)
+		    For i As Integer = 0 To UBound(mProfiles)
 		      listbox1.AddRow ""
-		      Dim datum() As String = profiles(i).AllData
+		      Dim datum() As String = mProfiles(i).AllData
 		      For j As Integer = 0 To  UBound(datum)
 		        listbox1.CellTextAt(listbox1.LastAddedRowIndex, j) = datum(j)
 		      Next
-		      listbox1.RowTagAt(listbox1.LastAddedRowIndex) = profiles(i).file
+		      listbox1.RowTagAt(listbox1.LastAddedRowIndex) = mProfiles(i).file
 		    Next
 		  Catch ex As NilObjectException
 		    
 		  End Try
 		End Sub
 	#tag EndMethod
+
+
+	#tag Property, Flags = &h21
+		Private mProfiles() As profile
+	#tag EndProperty
 
 
 	#tag Constant, Name = kDateColumn, Type = Double, Dynamic = False, Default = \"2", Scope = Private
