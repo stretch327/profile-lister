@@ -17,8 +17,8 @@ Begin DesktopWindow Window1
    MaximumWidth    =   32000
    MenuBar         =   15990783
    MenuBarVisible  =   False
-   MinimumHeight   =   64
-   MinimumWidth    =   64
+   MinimumHeight   =   400
+   MinimumWidth    =   800
    Resizeable      =   True
    Title           =   "Profiles"
    Type            =   0
