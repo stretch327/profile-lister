@@ -84,6 +84,15 @@ End
 
 
 	#tag MenuHandler
+		Function EditPreferences() As Boolean Handles EditPreferences.Action
+			Dim w As New PrefsWindow
+			w.ShowModal(self)
+			Return True
+			
+		End Function
+	#tag EndMenuHandler
+
+	#tag MenuHandler
 		Function ProfilesCleanup() As Boolean Handles ProfilesCleanup.Action
 		  // find all of the expired profiles and remove them
 		  

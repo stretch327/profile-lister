@@ -143,6 +143,25 @@ Begin Menu MainMenuBar
             Visible = True
          End
       End
+      Begin DesktopMenuItem UntitledSeparator0
+         SpecialMenu = 0
+         Index = -2147483648
+         Text = "-"
+         AutoEnabled = True
+         AutoEnable = True
+         Visible = True
+      End
+      Begin DesktopApplicationMenuItem EditPreferences
+         SpecialMenu = 0
+         Index = -2147483648
+         Text = "Preferences"
+         ShortcutKey = ","
+         Shortcut = "Cmd+,"
+         MenuModifier = True
+         AutoEnabled = True
+         AutoEnable = True
+         Visible = True
+      End
    End
    Begin DesktopMenuItem HelpMenu
       SpecialMenu = 0
