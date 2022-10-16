@@ -131,6 +131,18 @@ Begin Menu MainMenuBar
             AutoEnable = True
             Visible = True
          End
+         Begin DesktopMenuItem ProfilesDownload
+            SpecialMenu = 0
+            Index = -2147483648
+            Text = "Download"
+            ShortcutKey = "D"
+            Shortcut = "Cmd+Shift+D"
+            MenuModifier = True
+            AltMenuModifier = True
+            AutoEnabled = False
+            AutoEnable = False
+            Visible = True
+         End
          Begin DesktopMenuItem ProfilesRefresh
             SpecialMenu = 0
             Index = -2147483648

@@ -1,11 +1,30 @@
 #tag Class
 Protected Class profile
 	#tag Method, Flags = &h0
-		Function AllData() As String()
+		Function Filename() As String
+		  Dim sa() As String
+		  sa.add UUID
+		  sa.Add "."
+		  If Platform = "OSX" Then
+		    sa.add "provisionprofile"
+		  Else
+		    sa.Add "mobileprovision"
+		  End If
+		  
+		  return join(sa,"")
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function ListboxData() As String()
 		  Dim arr() As String
 		  arr.Add name
 		  arr.add ApplicationIdentifier
-		  arr.Add ExpirationDate.SQLDateTime
+		  If AppleStatus<>"" And AppleStatus<>"ACTIVE" Then
+		    arr.Add AppleStatus
+		  Else
+		    arr.Add ExpirationDate.SQLDateTime
+		  End If
 		  arr.Add Platform
 		  arr.Add TeamName
 		  arr.Add TimeToLive.ToString + " Days"
@@ -19,6 +38,14 @@ Protected Class profile
 
 	#tag Property, Flags = &h0
 		AppIDName As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		AppleID As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		AppleStatus As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -50,6 +77,10 @@ Protected Class profile
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		FileData As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		Name As String
 	#tag EndProperty
 
@@ -71,6 +102,10 @@ Protected Class profile
 
 	#tag Property, Flags = &h0
 		UUID As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Valid As Boolean = True
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

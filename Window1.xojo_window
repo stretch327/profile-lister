@@ -77,6 +77,12 @@ End
 
 #tag WindowCode
 	#tag Event
+		Sub MenuBarSelected()
+		  ProfilesDownload.Enabled = (AppleJWT.Create <> nil)
+		End Sub
+	#tag EndEvent
+
+	#tag Event
 		Sub Opening()
 		  RefreshProfileList
 		End Sub
@@ -94,35 +100,66 @@ End
 
 	#tag MenuHandler
 		Function ProfilesCleanup() As Boolean Handles ProfilesCleanup.Action
-		  // find all of the expired profiles and remove them
-		  
-		  Dim md As New MessageDialog
-		  md.CancelButton.Visible = True
-		  md.Message = "Are you sure you want to remove all expired profiles?"
-		  Dim btn As MessageDialogButton = md.ShowModal(Self)
-		  Dim now As Double = DateTime.Now.SecondsFrom1970
-		  If btn = md.ActionButton Then
-		    For i As Integer = 0 To UBound(mProfiles)
-		      If mProfiles(i).ExpirationDate.SecondsFrom1970 < now Then
-		        Try
-		          mProfiles(i).file.MoveTo SpecialFolder.Trash
-		        Catch ex As IOException
-		          mProfiles(i).file.Delete
-		        End Try
-		      End If
-		    Next
-		    RefreshProfileList
-		  End If
-		  Return True
-		  
+			// find all of the expired profiles and remove them
+			
+			Dim md As New MessageDialog
+			md.CancelButton.Visible = True
+			md.Message = "Are you sure you want to remove all expired profiles?"
+			Dim btn As MessageDialogButton = md.ShowModal(Self)
+			Dim now As Double = DateTime.Now.SecondsFrom1970
+			If btn = md.ActionButton Then
+			For i As Integer = 0 To UBound(mProfiles)
+			If mProfiles(i).ExpirationDate.SecondsFrom1970 < now Then
+			Try
+			mProfiles(i).file.MoveTo SpecialFolder.Trash
+			Catch ex As IOException
+			mProfiles(i).file.Delete
+			End Try
+			End If
+			Next
+			RefreshProfileList
+			End If
+			Return True
+			
+		End Function
+	#tag EndMenuHandler
+
+	#tag MenuHandler
+		Function profilesDownload() As Boolean Handles profilesDownload.Action
+			Dim dest As FolderItem = FolderItems.ProfilesDirectory
+			If dest = Nil Then
+			Return False
+			End If
+			
+			If MsgBox("Downloading profiles will re-download and replace the ones that are already installed on your computer. Are you sure?", 4) <> 6 Then
+			Return True
+			End If
+			
+			For i As Integer = 0 To UBound(mProfiles)
+			If mProfiles(i).FileData <> "" Then
+			Try
+			Dim f As FolderItem = dest.Child(mProfiles(i).Filename)
+			If f.Exists Then
+			f.Delete
+			End If
+			Dim bs As BinaryStream = BinaryStream.Create(f)
+			bs.write DecodeBase64(mProfiles(i).FileData)
+			bs.Close
+			Catch ex As RuntimeException
+			
+			End Try
+			End If
+			Next
+			Return True
+			
 		End Function
 	#tag EndMenuHandler
 
 	#tag MenuHandler
 		Function ProfilesRefresh() As Boolean Handles ProfilesRefresh.Action
-		  RefreshProfileList
-		  Return True
-		  
+			RefreshProfileList
+			Return True
+			
 		End Function
 	#tag EndMenuHandler
 
@@ -130,7 +167,7 @@ End
 	#tag Method, Flags = &h21
 		Private Sub RefreshProfileList()
 		  Try
-		    Dim f As FolderItem = SpecialFolder.UserLibrary.Child("MobileDevice").Child("Provisioning Profiles")
+		    Dim f As FolderItem = FolderItems.ProfilesDirectory
 		    
 		    Redim mProfiles(-1)
 		    Dim sortOrder() As Integer
@@ -198,17 +235,105 @@ End
 		    
 		    sortOrder.SortWith(mProfiles)
 		    
-		    listbox1.RemoveAllRows
+		    UpdateListbox
 		    
-		    For i As Integer = 0 To UBound(mProfiles)
-		      listbox1.AddRow ""
-		      Dim datum() As String = mProfiles(i).AllData
-		      For j As Integer = 0 To  UBound(datum)
-		        listbox1.CellTextAt(listbox1.LastAddedRowIndex, j) = datum(j)
-		      Next
-		      listbox1.RowTagAt(listbox1.LastAddedRowIndex) = mProfiles(i).file
-		    Next
+		    UpdateProfilesWithAPI
 		  Catch ex As NilObjectException
+		    
+		  End Try
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub RemoveProfileFromSite(ID as String)
+		  Dim x As AppleJWT = AppleJWT.Create()
+		  If x = Nil Then
+		    Return
+		  End If
+		  
+		  If ID = "" Then
+		    Return
+		  End If
+		  
+		  Dim conn As New URLConnection
+		  
+		  conn.RequestHeader("Authorization") = "Bearer " + x.Token
+		  
+		  conn.send("DELETE", "https://api.appstoreconnect.apple.com/v1/profiles/" + ID)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub UpdateListbox()
+		  listbox1.RemoveAllRows
+		  
+		  For i As Integer = 0 To UBound(mProfiles)
+		    listbox1.AddRow ""
+		    Dim datum() As String = mProfiles(i).ListboxData
+		    For j As Integer = 0 To  UBound(datum)
+		      listbox1.CellTextAt(listbox1.LastAddedRowIndex, j) = datum(j)
+		    Next
+		    listbox1.RowTagAt(listbox1.LastAddedRowIndex) = mProfiles(i)
+		  Next
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub UpdateProfilesWithAPI()
+		  Dim x As AppleJWT = AppleJWT.Create()
+		  If x = Nil Then
+		    Return
+		  End If
+		  
+		  Try
+		    Dim conn As New URLConnection
+		    AddHandler conn.ContentReceived, AddressOf URLConnection_ContentReceived
+		    
+		    Dim url As String = "https://api.appstoreconnect.apple.com/v1/profiles"
+		    
+		    conn.RequestHeader("Authorization") = "Bearer " + x.Token
+		    
+		    conn.Send("GET", url)
+		    
+		  Catch ex As RuntimeException
+		    
+		  End Try
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub URLConnection_ContentReceived(obj As URLConnection, URL As String, HTTPStatus As Integer, content As String)
+		  RemoveHandler obj.ContentReceived, AddressOf URLConnection_ContentReceived
+		  
+		  Try
+		    
+		    Dim js As New JSONItem(content)
+		    Dim data As JSONItem = js.Child("data")
+		    Dim c As Integer = data.Count
+		    
+		    // mark all of the local profiles as invalid
+		    Dim cache As New Dictionary
+		    For i As Integer = 0 To UBound(mProfiles)
+		      mProfiles(i).Valid = False
+		      cache.Value(mProfiles(i).UUID) = mProfiles(i)
+		    Next
+		    
+		    For i As Integer = 0 To c-1
+		      Dim prof As JSONItem = data.ChildAt(i)
+		      Dim attr As JSONItem = prof.Child("attributes")
+		      Dim uuid As String = attr.Value("uuid")
+		      
+		      Dim item As Variant = cache.lookup(uuid, Nil)
+		      If item<>Nil And item IsA profile Then
+		        profile(item).Valid = True
+		        profile(item).AppleID = prof.Value("id")
+		        profile(item).AppleStatus = attr.Value("profileState")
+		        profile(item).FileData = attr.Value("profileContent")
+		      End If
+		    Next
+		    
+		    UpdateListbox
+		  Catch ex As RuntimeException
 		    
 		  End Try
 		End Sub
@@ -236,6 +361,11 @@ End
 		  
 		  If Me.SelectedRowCount = 1 Then
 		    base.AddMenu(New DesktopMenuItem(strings.kShowInFinder))
+		    
+		    Dim prof As profile = Me.RowTagAt(row)
+		    If prof.AppleID <> "" Then
+		      base.AddMenu(New DesktopMenuItem(strings.kShowAtApple))
+		    End If
 		  End If
 		  base.AddMenu(New DesktopMenuItem("-"))
 		  base.AddMenu(New DesktopMenuItem(strings.kRemove))
@@ -246,18 +376,26 @@ End
 	#tag Event
 		Function ContextualMenuItemSelected(selectedItem As DesktopMenuItem) As Boolean
 		  Select Case selectedItem.Text
+		  Case strings.kShowAtApple
+		    Dim prof As profile = profile(Me.RowTagAt(Me.SelectedRowIndex))
+		    Dim url As String = "https://developer.apple.com/account/resources/profiles/review/" + prof.AppleID
+		    system.GotoURL(url)
 		  Case strings.kRemove
 		    Dim c As Integer = Me.SelectedRowCount
 		    If c > 0 Then
 		      For i As Integer = Me.RowCount-1 DownTo 0
 		        If Me.RowSelectedAt(i) Then
 		          Dim row As Integer = i
-		          Dim f As FolderItem = Me.RowTagAt(row)
+		          Dim prof As profile = profile(Me.RowTagAt(row))
+		          Dim f As FolderItem = prof.file
 		          If f= Nil Then
 		            Return False
 		          End If
 		          
 		          f.MoveTo SpecialFolder.Trash
+		          
+		          // remove the one from Apple's site if there's one that matches
+		          RemoveProfileFromSite(prof.AppleID)
 		          
 		          Me.RemoveRowAt(row)
 		        End If
@@ -269,7 +407,7 @@ End
 		      Return False
 		    End If
 		    
-		    Dim f As FolderItem = Me.RowTagAt(row)
+		    Dim f As FolderItem = Profile(Me.RowTagAt(row)).file
 		    
 		    Declare Function NSClassFromString Lib "Foundation" (name As cfstringref) As ptr
 		    // @property(class, readonly, strong) NSWorkspace *sharedWorkspace;
@@ -294,22 +432,39 @@ End
 		  Dim txt As String = Me.CellTextAt(row, column)
 		  Dim changed As Boolean = False
 		  
+		  Dim prof As profile = Me.RowTagAt(row)
+		  
 		  g.DrawingColor = TextColor
 		  
 		  Dim tzgmt As New TimeZone(0)
-		  Dim itemDate As DateTime = DateTime.FromString(Me.CellTextAt(row, kDateColumn), Nil, tzgmt)
-		  
-		  // items expiring in the next week should be orange
-		  Dim nextWeek As Double = DateTime.Now.SecondsFrom1970 + 86400 * 7
-		  If itemDate.SecondsFrom1970 < nextWeek Then
-		    g.DrawingColor = ColorGroup.NamedColor("systemOrangeColor")
-		  End If
-		  
-		  // items already expired should be red
-		  If (txt.IndexOf("*") > -1) or itemDate.SecondsFrom1970 < DateTime.Now.SecondsFrom1970 then
+		  #Pragma BreakOnExceptions False
+		  Try
+		    Dim itemDate As DateTime = DateTime.FromString(Me.CellTextAt(row, kDateColumn), Nil, tzgmt)
+		    
+		    // items expiring in the next week should be orange
+		    Dim nextWeek As Double = DateTime.Now.SecondsFrom1970 + 86400 * 7
+		    If itemDate.SecondsFrom1970 < nextWeek Then
+		      g.DrawingColor = ColorGroup.NamedColor("systemOrangeColor")
+		      changed = True
+		    End If
+		    
+		    // items already expired should be red
+		    If (txt.IndexOf("*") > -1) or itemDate.SecondsFrom1970 < DateTime.Now.SecondsFrom1970 then
+		      g.DrawingColor = ColorGroup.NamedColor("systemRedColor")
+		      changed = True
+		    End If
+		  Catch ex As RuntimeException
 		    g.DrawingColor = ColorGroup.NamedColor("systemRedColor")
 		    changed = True
+		  End Try
+		  
+		  // Items that don't exist at Apple should also be flagged, red & italic
+		  If prof.Valid = False Then
+		    g.DrawingColor = ColorGroup.NamedColor("systemRedColor")
+		    g.Italic = True
+		    changed = True
 		  End If
+		  
 		  
 		  Select Case column
 		  Case 8 // xcode

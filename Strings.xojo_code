@@ -51,8 +51,21 @@ Protected Module Strings
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function Param(aString as string, paramarray replacements as string) As String
+		  For i As Integer = UBound(replacements) DownTo 0
+		    aString = aString.ReplaceAll("%" + Str(i+1), replacements(i))
+		  Next
+		  
+		  return aString
+		End Function
+	#tag EndMethod
+
 
 	#tag Constant, Name = kRemove, Type = String, Dynamic = False, Default = \"Remove", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = kShowAtApple, Type = String, Dynamic = False, Default = \"Show At Apple\xE2\x80\xA6", Scope = Protected
 	#tag EndConstant
 
 	#tag Constant, Name = kShowInFinder, Type = String, Dynamic = False, Default = \"Show In Finder", Scope = Protected
