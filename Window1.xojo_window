@@ -33,8 +33,8 @@ Begin DesktopWindow Window1
       AllowRowDragging=   False
       AllowRowReordering=   False
       Bold            =   False
-      ColumnCount     =   9
-      ColumnWidths    =   "*,*,100,40,*,70,*,50,50"
+      ColumnCount     =   10
+      ColumnWidths    =   "*,*,100,40,*,70,*,50,50,25"
       DefaultRowHeight=   -1
       DropIndicatorVisible=   False
       Enabled         =   True
@@ -49,7 +49,7 @@ Begin DesktopWindow Window1
       HeadingIndex    =   -1
       Height          =   400
       Index           =   -2147483648
-      InitialValue    =   "Name	AppID	Exp Date	OS	Team	TTL	UUID	Type	Xcode"
+      InitialValue    =   "Name	AppID	Exp Date	OS	Team	TTL	UUID	Type	Xcode	 "
       Italic          =   False
       Left            =   0
       LockBottom      =   True
@@ -289,7 +289,7 @@ End
 		    Dim conn As New URLConnection
 		    AddHandler conn.ContentReceived, AddressOf URLConnection_ContentReceived
 		    
-		    Dim url As String = "https://api.appstoreconnect.apple.com/v1/profiles"
+		    Dim url As String = "https://api.appstoreconnect.apple.com/v1/profiles?limit=200"
 		    
 		    conn.RequestHeader("Authorization") = "Bearer " + x.Token
 		    
@@ -329,6 +329,7 @@ End
 		        profile(item).AppleID = prof.Value("id")
 		        profile(item).AppleStatus = attr.Value("profileState")
 		        profile(item).FileData = attr.Value("profileContent")
+		        profile(item).HelpTag = attr.Value("profileState")
 		      End If
 		    Next
 		    
@@ -346,6 +347,9 @@ End
 
 
 	#tag Constant, Name = kDateColumn, Type = Double, Dynamic = False, Default = \"2", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kHelpColumn, Type = Double, Dynamic = False, Default = \"9", Scope = Private
 	#tag EndConstant
 
 
@@ -375,12 +379,23 @@ End
 	#tag EndEvent
 	#tag Event
 		Function ContextualMenuItemSelected(selectedItem As DesktopMenuItem) As Boolean
+		  
 		  Select Case selectedItem.Text
 		  Case strings.kShowAtApple
 		    Dim prof As profile = profile(Me.RowTagAt(Me.SelectedRowIndex))
 		    Dim url As String = "https://developer.apple.com/account/resources/profiles/review/" + prof.AppleID
-		    system.GotoURL(url)
+		    System.GotoURL(url)
 		  Case strings.kRemove
+		    Dim shouldRemoveAtApple As Boolean = False
+		    
+		    Dim ans As String = MsgBoxPlus(Self, "Do you also want to remove these items from your Apple Developer account (if they exist)?", "", "Yes", "No", "Cancel")
+		    Select Case ans
+		    Case "yes"
+		      shouldRemoveAtApple = True
+		    Case "Cancel"
+		      Return True
+		    End Select
+		    
 		    Dim c As Integer = Me.SelectedRowCount
 		    If c > 0 Then
 		      For i As Integer = Me.RowCount-1 DownTo 0
@@ -394,13 +409,17 @@ End
 		          
 		          f.MoveTo SpecialFolder.Trash
 		          
-		          // remove the one from Apple's site if there's one that matches
-		          RemoveProfileFromSite(prof.AppleID)
+		          If shouldRemoveAtApple Then
+		            // remove the one from Apple's site if there's one that matches
+		            RemoveProfileFromSite(prof.AppleID)
+		          End If
 		          
-		          Me.RemoveRowAt(row)
 		        End If
 		      Next
 		    End If
+		    
+		    RefreshProfileList
+		    
 		  Case strings.kShowInFinder
 		    Dim row As Integer = Me.SelectedRowIndex
 		    If row = -1 Then
@@ -475,6 +494,11 @@ End
 		    g.Bold = (txt = "Dist")
 		    changed = True
 		    
+		  Case 9 // HelpTag
+		    If prof.HelpTag<>"" And prof.HelpTag<>"ACTIVE" Then
+		      
+		    End If
+		    
 		  End Select
 		  
 		  // lastly, if the row is selected then make the text the right color
@@ -491,6 +515,34 @@ End
 		  
 		  
 		End Function
+	#tag EndEvent
+	#tag Event
+		Sub MouseMove(x As Integer, y As Integer)
+		  Dim row As Integer = Me.RowFromXY(x,y)
+		  Dim col As Integer = Me.ColumnFromXY(x,y)
+		  If row > Me.LastRowIndex or row = -1 then
+		    Return
+		  End If
+		  
+		  Dim prof As profile = profile(Me.RowTagAt(row))
+		  
+		  Dim helptag As String = prof.HelpTag
+		  
+		  Select Case helptag
+		  Case "ACTIVE"
+		    helptag = ""
+		  Case "INVALID"
+		    helptag = "This profile is marked as Invalid at Apple and should be investigated."
+		  End Select
+		  
+		  
+		  If prof.AppleID = "" Then
+		    helptag = "This profile does not exist at Apple"
+		  End If
+		  
+		  Me.Tooltip = helptag
+		  
+		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag ViewBehavior
