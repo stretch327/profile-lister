@@ -14,6 +14,7 @@ Module=Prefs;Prefs.xojo_code;&h000000003FFFD7FF;&h0000000000000000;false
 FileTypeSet=FileTypeGroup1;FileTypeGroup1.xojo_filetypeset;&h0000000057B91FFF;&h0000000000000000;false
 Module=FolderItems;FolderItems.xojo_code;&h000000002F9447FF;&h0000000000000000;false
 Module=Helpers;Helpers.xojo_code;&h0000000052158FFF;&h0000000000000000;false
+Module=Icons;Icons.xojo_code;&h000000007B3DCFFF;&h0000000000000000;false
 DefaultWindow=Window1
 AppMenuBar=MainMenuBar
 MajorVersion=1
