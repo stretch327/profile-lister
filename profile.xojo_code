@@ -84,6 +84,15 @@ Protected Class profile
 		HelpTag As String
 	#tag EndProperty
 
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Return AppleStatus = "INVALID"
+			End Get
+		#tag EndGetter
+		Invalid As Boolean
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h0
 		Name As String
 	#tag EndProperty
@@ -247,6 +256,46 @@ Protected Class profile
 			Visible=false
 			Group="Behavior"
 			InitialValue=""
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="AppleID"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="AppleStatus"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="FileData"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="HelpTag"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Valid"
+			Visible=false
+			Group="Behavior"
+			InitialValue="True"
 			Type="Boolean"
 			EditorType=""
 		#tag EndViewProperty

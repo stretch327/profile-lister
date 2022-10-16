@@ -543,6 +543,45 @@ End
 		  
 		End Sub
 	#tag EndEvent
+	#tag Event
+		Function PaintCellBackground(g As Graphics, row As Integer, column As Integer) As Boolean
+		  If row < 0 Or row > Me.LastRowIndex Then
+		    Return False
+		  End If
+		  
+		  If Me.RowSelectedAt(row) Then
+		    g.DrawingColor = ColorGroup.NamedColor("selectedContentBackgroundColor")
+		    g.FillRectangle 0, 0, g.Width, g.Height
+		  End If
+		  
+		  Dim prof As profile = Me.RowTagAt(row)
+		  Dim now As DateTime = DateTime.Now
+		  
+		  Dim isExpired As Boolean = (prof.ExpirationDate.SecondsFrom1970 < now.SecondsFrom1970)
+		  Dim isExpiring As Boolean = ((prof.ExpirationDate.SecondsFrom1970 + 86400*7) < now.SecondsFrom1970)
+		  Dim isInvalid As Boolean = prof.Invalid
+		  Dim isOnlyLocal As Boolean = (prof.AppleID = "")
+		  
+		  Select Case column
+		  Case kHelpColumn
+		    Dim icon As Picture
+		    If isExpired Or isInvalid or isOnlyLocal then
+		      icon = icons.GetIcon("Error")
+		    ElseIf isExpiring Then
+		      icon = icons.GetIcon("Warning")
+		    End If
+		    
+		    If icon<>Nil Then
+		      Dim y As Integer = (g.Height - icon.Height)/2
+		      Dim x As Integer = g.Width - icon.Width - y
+		      
+		      g.DrawPicture icon, x, y
+		    End If
+		  End Select
+		  
+		  Return True
+		End Function
+	#tag EndEvent
 #tag EndEvents
 #tag ViewBehavior
 	#tag ViewProperty
