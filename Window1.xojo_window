@@ -494,11 +494,6 @@ End
 		    g.Bold = (txt = "Dist")
 		    changed = True
 		    
-		  Case 9 // HelpTag
-		    If prof.HelpTag<>"" And prof.HelpTag<>"ACTIVE" Then
-		      
-		    End If
-		    
 		  End Select
 		  
 		  // lastly, if the row is selected then make the text the right color

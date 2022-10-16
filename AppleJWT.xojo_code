@@ -79,8 +79,6 @@ Protected Class AppleJWT
 		    
 		    Dim jwtPath As String = getBundlePath(mainBundle) + "/Contents/Helpers/jwtsign"
 		    
-		    Dim tmp As String = header + "." + Payload
-		    
 		    Dim cmd As String = param("""" + jwtPath + """ -header '%1' -payload '%2' -key ""%3""", header, payload, mKeyFile)
 		    
 		    Dim sh As New Shell
@@ -194,6 +192,22 @@ Protected Class AppleJWT
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Expired"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Token"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
 			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
