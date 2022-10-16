@@ -519,7 +519,6 @@ End
 	#tag Event
 		Sub MouseMove(x As Integer, y As Integer)
 		  Dim row As Integer = Me.RowFromXY(x,y)
-		  Dim col As Integer = Me.ColumnFromXY(x,y)
 		  If row > Me.LastRowIndex or row = -1 then
 		    Return
 		  End If
