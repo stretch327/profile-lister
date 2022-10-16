@@ -1,0 +1,18 @@
+#tag FileTypeSet
+	#tag FileType
+		CodeName=P8CertFile
+		Extension=.p8
+		Flags=&h2
+		MacCreator=
+		MacType=
+		Name=p8 Certificate File
+		UTI=public.item
+		UTIConformsTo=public.item, public.data
+		Description=
+		MimeType=
+		Imported=True
+		HandlerRank=&h9
+		UTIPhysicalType=public.data
+	#tag EndFileType
+
+#tag EndFileTypeSet
