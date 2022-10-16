@@ -34,8 +34,8 @@ Begin DesktopWindow Window1
       AllowRowReordering=   False
       Bold            =   False
       ColumnCount     =   10
-      ColumnWidths    =   "*,*,100,40,*,70,*,50,50,25"
-      DefaultRowHeight=   -1
+      ColumnWidths    =   "*,*,150,40,*,70,*,50,50,25"
+      DefaultRowHeight=   20
       DropIndicatorVisible=   False
       Enabled         =   True
       FontName        =   "System"
