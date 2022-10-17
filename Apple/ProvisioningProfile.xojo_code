@@ -1,5 +1,5 @@
 #tag Class
-Protected Class profile
+Protected Class ProvisioningProfile
 	#tag Method, Flags = &h0
 		Function Filename() As String
 		  Dim sa() As String

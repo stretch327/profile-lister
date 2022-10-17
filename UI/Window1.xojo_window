@@ -195,7 +195,7 @@ End
 		        xml.LoadXml(plistdata)
 		        
 		        // extract the parts we want
-		        Dim p As New profile
+		        Dim p As New ProvisioningProfile
 		        p.AppIDName = FindKeyValuePair(plistdata, "AppIDName")
 		        Dim appID As String = FindKeyValuePair(plistdata, "application-identifier")
 		        If appID = "" Then
@@ -329,12 +329,12 @@ End
 		      Dim uuid As String = attr.Value("uuid")
 		      
 		      Dim item As Variant = cache.lookup(uuid, Nil)
-		      If item<>Nil And item IsA profile Then
-		        profile(item).Valid = True
-		        profile(item).AppleID = prof.Value("id")
-		        profile(item).AppleStatus = attr.Value("profileState")
-		        profile(item).FileData = attr.Value("profileContent")
-		        profile(item).HelpTag = attr.Value("profileState")
+		      If item<>Nil And item IsA ProvisioningProfile Then
+		        ProvisioningProfile(item).Valid = True
+		        ProvisioningProfile(item).AppleID = prof.Value("id")
+		        ProvisioningProfile(item).AppleStatus = attr.Value("profileState")
+		        ProvisioningProfile(item).FileData = attr.Value("profileContent")
+		        ProvisioningProfile(item).HelpTag = attr.Value("profileState")
 		      End If
 		    Next
 		    
@@ -347,7 +347,7 @@ End
 
 
 	#tag Property, Flags = &h21
-		Private mProfiles() As profile
+		Private mProfiles() As ProvisioningProfile
 	#tag EndProperty
 
 
@@ -371,7 +371,7 @@ End
 		  If Me.SelectedRowCount = 1 Then
 		    base.AddMenu(New DesktopMenuItem(strings.kShowInFinder))
 		    
-		    Dim prof As profile = Me.RowTagAt(row)
+		    Dim prof As ProvisioningProfile = Me.RowTagAt(row)
 		    If prof.AppleID <> "" Then
 		      base.AddMenu(New DesktopMenuItem(strings.kShowAtApple))
 		    End If
@@ -387,7 +387,7 @@ End
 		  
 		  Select Case selectedItem.Text
 		  Case strings.kShowAtApple
-		    Dim prof As profile = profile(Me.RowTagAt(Me.SelectedRowIndex))
+		    Dim prof As ProvisioningProfile = ProvisioningProfile(Me.RowTagAt(Me.SelectedRowIndex))
 		    Dim url As String = "https://developer.apple.com/account/resources/profiles/review/" + prof.AppleID
 		    System.GotoURL(url)
 		  Case strings.kRemove
@@ -406,7 +406,7 @@ End
 		      For i As Integer = Me.RowCount-1 DownTo 0
 		        If Me.RowSelectedAt(i) Then
 		          Dim row As Integer = i
-		          Dim prof As profile = profile(Me.RowTagAt(row))
+		          Dim prof As ProvisioningProfile = ProvisioningProfile(Me.RowTagAt(row))
 		          Dim f As FolderItem = prof.file
 		          If f= Nil Then
 		            Return False
@@ -431,7 +431,7 @@ End
 		      Return False
 		    End If
 		    
-		    Dim f As FolderItem = Profile(Me.RowTagAt(row)).file
+		    Dim f As FolderItem = ProvisioningProfile(Me.RowTagAt(row)).file
 		    
 		    Declare Function NSClassFromString Lib "Foundation" (name As cfstringref) As ptr
 		    // @property(class, readonly, strong) NSWorkspace *sharedWorkspace;
@@ -456,7 +456,7 @@ End
 		  Dim txt As String = Me.CellTextAt(row, column)
 		  Dim changed As Boolean = False
 		  
-		  Dim prof As profile = Me.RowTagAt(row)
+		  Dim prof As ProvisioningProfile = Me.RowTagAt(row)
 		  
 		  g.DrawingColor = TextColor
 		  
@@ -523,7 +523,7 @@ End
 		    Return
 		  End If
 		  
-		  Dim prof As profile = profile(Me.RowTagAt(row))
+		  Dim prof As ProvisioningProfile = ProvisioningProfile(Me.RowTagAt(row))
 		  
 		  Dim helptag As String = prof.HelpTag
 		  
@@ -554,7 +554,7 @@ End
 		    g.FillRectangle 0, 0, g.Width, g.Height
 		  End If
 		  
-		  Dim prof As profile = Me.RowTagAt(row)
+		  Dim prof As ProvisioningProfile = Me.RowTagAt(row)
 		  Dim now As DateTime = DateTime.Now
 		  
 		  Dim isExpired As Boolean = (prof.ExpirationDate.SecondsFrom1970 < now.SecondsFrom1970)
