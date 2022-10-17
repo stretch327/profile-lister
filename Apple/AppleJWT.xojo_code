@@ -146,6 +146,11 @@ Protected Class AppleJWT
 			    mToken = SignedToken
 			  End If
 			  
+			  #If DebugBuild
+			    Dim s As String = mToken
+			    #Pragma Unused s
+			  #EndIf
+			  
 			  Return mToken
 			End Get
 		#tag EndGetter
@@ -208,7 +213,7 @@ Protected Class AppleJWT
 			Group="Behavior"
 			InitialValue=""
 			Type="String"
-			EditorType=""
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class

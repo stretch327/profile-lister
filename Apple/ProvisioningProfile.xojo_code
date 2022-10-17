@@ -1,5 +1,61 @@
 #tag Class
-Protected Class profile
+Protected Class ProvisioningProfile
+	#tag Method, Flags = &h0
+		Shared Function CreateFromPlist(plistData as string, sourceFile as FolderItem = nil) As ProvisioningProfile
+		  Try
+		    // Strip off any signature info that we got
+		    Dim rx As New RegEx
+		    rx.SearchPattern = "(?msi-U)(<\?xml.*</plist>)"
+		    rx.Options.LineEndType = 4
+		    Dim rm As RegExMatch = rx.Search(plistData)
+		    If rm = Nil Then
+		      Return Nil
+		    End If
+		    
+		    Dim data As String = rm.SubExpressionString(1)
+		    
+		    // make sure it's a valid plist file
+		    Dim xml As New XmlDocument
+		    xml.LoadXml(data)
+		    
+		    // extract the parts we want
+		    Dim p As New ProvisioningProfile
+		    p.AppIDName = FindKeyValuePair(plistdata, "AppIDName")
+		    Dim appID As String = FindKeyValuePair(plistdata, "application-identifier")
+		    If appID = "" Then
+		      appID = FindKeyValuePair(plistdata,"com.apple.application-identifier")
+		    End If
+		    
+		    p.ApplicationIdentifier = appID
+		    p.ApplicationIdentifierPrefix = FindKeyValuePair(plistdata, "ApplicationIdentifierPrefix")
+		    p.CreationDate = FindKeyValuePair(plistdata, "CreationDate").StringValue.ConvertUTCDate
+		    p.ExpirationDate = FindKeyValuePair(plistdata, "ExpirationDate").StringValue.ConvertUTCDate
+		    p.Name = FindKeyValuePair(plistdata, "name")
+		    p.Platform = FindKeyValuePair(plistdata, "platform")
+		    p.TeamIDs = FindKeyValuePair(plistdata, "TeamIdentifier")
+		    p.TeamName = FindKeyValuePair(plistdata, "teamName")
+		    p.TimeToLive = FindKeyValuePair(plistdata, "timeToLive")
+		    p.UUID = FindKeyValuePair(plistdata, "UUID")
+		    p.Version = FindKeyValuePair(plistdata, "version")
+		    p.XcodeManaged = FindKeyValuePair(plistdata, "IsXcodeManaged")
+		    Dim device As String = FindKeyValuePair(plistdata, "ProvisionedDevices")
+		    If device = "" Then
+		      p.DevProfile = False
+		    Else
+		      p.DevProfile = True
+		    End If
+		    
+		    p.file = sourceFile
+		    
+		    Return p
+		  Catch ex As XmlException
+		    
+		  End Try
+		  
+		  Return Nil
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
 		Function Filename() As String
 		  Dim sa() As String
