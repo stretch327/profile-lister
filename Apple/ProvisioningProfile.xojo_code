@@ -1,6 +1,12 @@
 #tag Class
 Class ProvisioningProfile
 	#tag Method, Flags = &h0
+		Function AssociatedWithTeam(TeamID as String) As Boolean
+		  return mTeamIDs.IndexOf(TeamID)>-1
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Shared Function CreateFromPlist(plistData as string) As ProvisioningProfile
 		  Try
 		    // Strip off any signature info that we got
@@ -44,6 +50,9 @@ Class ProvisioningProfile
 		      p.DevProfile = True
 		    End If
 		    
+		    // this one's an array
+		    p.mTeamIDs.add FindKeyValuePair(plistdata, "TeamIdentifier")
+		    
 		    Return p
 		  Catch ex As XmlException
 		    
@@ -85,6 +94,12 @@ Class ProvisioningProfile
 		  arr.Add If(DevProfile, "Dev", "Dist")
 		  arr.add if(XcodeManaged, "Y", "N")
 		  Return arr
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function TeamIDs() As String()
+		  return mTeamIDs
 		End Function
 	#tag EndMethod
 
@@ -151,16 +166,16 @@ Class ProvisioningProfile
 		Invalid As Boolean
 	#tag EndComputedProperty
 
+	#tag Property, Flags = &h21
+		Private mTeamIDs() As String
+	#tag EndProperty
+
 	#tag Property, Flags = &h0
 		Name As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
 		Platform As String
-	#tag EndProperty
-
-	#tag Property, Flags = &h0
-		TeamIDs As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -234,7 +249,7 @@ Class ProvisioningProfile
 			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
-			Name="TeamIDs"
+			Name="mTeamIDs()"
 			Visible=false
 			Group="Behavior"
 			InitialValue=""

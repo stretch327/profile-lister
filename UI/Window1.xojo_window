@@ -284,10 +284,28 @@ End
 		      cache.Value(mProfiles(i).UUID) = mProfiles(i)
 		    Next
 		    
+		    Dim teamIDs() As String
+		    
 		    For i As Integer = 0 To c-1
 		      Dim prof As JSONItem = data.ChildAt(i)
 		      Dim attr As JSONItem = prof.Child("attributes")
 		      Dim uuid As String = attr.Value("uuid")
+		      
+		      Try
+		        // use the content of the profile to extract the team IDs
+		        Dim profileData As String = attr.Value("profileContent")
+		        Dim p As ProvisioningProfile = ProvisioningProfile.CreateFromPlist(DecodeBase64(profileData))
+		        If p<>Nil Then
+		          Dim IDs() As String = p.TeamIDs
+		          For j As Integer = 0 To UBound(IDs)
+		            If teamIDs.IndexOf(IDs(j)) = -1 Then
+		              teamIDs.Add IDs(j)
+		            End If
+		          Next
+		        End If
+		      Catch ex As RuntimeException
+		        // we don't actually care
+		      End Try
 		      
 		      Dim item As Variant = cache.lookup(uuid, Nil)
 		      If item<>Nil And item IsA ProvisioningProfile Then
@@ -299,6 +317,14 @@ End
 		      End If
 		    Next
 		    
+		    // now go through the profiles we have for the teams we just loaded and see if any haven't been matched
+		    For i As Integer = 0 To UBound(mProfiles)
+		      For j As Integer = 0 To UBound(teamIDs)
+		        If mProfiles(i).AssociatedWithTeam(teamIDs(j)) And mProfiles(i).AppleID = ProvisioningProfile.kNonAppleID Then
+		          mProfiles(i).AppleID = ""
+		        End If
+		      Next
+		    Next
 		    UpdateListbox
 		  Catch ex As RuntimeException
 		    
