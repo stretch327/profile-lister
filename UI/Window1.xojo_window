@@ -180,7 +180,7 @@ End
 		        
 		        data = DefineEncoding(data, encodings.ASCII)
 		        
-		        Dim p As ProvisioningProfile = ProvisioningProfile.CreateFromPlist(data, child)
+		        Dim p As ProvisioningProfile = ProvisioningProfile.CreateFromPlist(data)
 		        If p<>Nil Then
 		          mProfiles.Add p
 		          sortOrder.Add p.ExpirationDate.SecondsFrom1970

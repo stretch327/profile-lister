@@ -1,7 +1,7 @@
 #tag Class
 Class ProvisioningProfile
 	#tag Method, Flags = &h0
-		Shared Function CreateFromPlist(plistData as string, sourceFile as FolderItem = nil) As ProvisioningProfile
+		Shared Function CreateFromPlist(plistData as string) As ProvisioningProfile
 		  Try
 		    // Strip off any signature info that we got
 		    Dim rx As New RegEx
@@ -44,8 +44,6 @@ Class ProvisioningProfile
 		    Else
 		      p.DevProfile = True
 		    End If
-		    
-		    p.file = sourceFile
 		    
 		    Return p
 		  Catch ex As XmlException
@@ -128,9 +126,14 @@ Class ProvisioningProfile
 		ExpirationDate As DateTime
 	#tag EndProperty
 
-	#tag Property, Flags = &h0
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return Apple.ProfilesDirectory.Child(Self.Filename)
+			End Get
+		#tag EndGetter
 		file As FolderItem
-	#tag EndProperty
+	#tag EndComputedProperty
 
 	#tag Property, Flags = &h0
 		FileData As String
