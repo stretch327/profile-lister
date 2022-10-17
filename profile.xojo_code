@@ -41,7 +41,7 @@ Protected Class profile
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		AppleID As String
+		AppleID As String = "No Apple Connection"
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -265,7 +265,7 @@ Protected Class profile
 			Group="Behavior"
 			InitialValue=""
 			Type="String"
-			EditorType=""
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="AppleStatus"
@@ -273,7 +273,7 @@ Protected Class profile
 			Group="Behavior"
 			InitialValue=""
 			Type="String"
-			EditorType=""
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="FileData"
@@ -281,7 +281,7 @@ Protected Class profile
 			Group="Behavior"
 			InitialValue=""
 			Type="String"
-			EditorType=""
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="HelpTag"
@@ -289,13 +289,21 @@ Protected Class profile
 			Group="Behavior"
 			InitialValue=""
 			Type="String"
-			EditorType=""
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Valid"
 			Visible=false
 			Group="Behavior"
 			InitialValue="True"
+			Type="Boolean"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Invalid"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
 			Type="Boolean"
 			EditorType=""
 		#tag EndViewProperty

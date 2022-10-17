@@ -285,6 +285,11 @@ End
 		    Return
 		  End If
 		  
+		  Dim token As String = x.Token
+		  If token = "Error signing the token" Then
+		    Return
+		  End If
+		  
 		  Try
 		    Dim conn As New URLConnection
 		    AddHandler conn.ContentReceived, AddressOf URLConnection_ContentReceived
