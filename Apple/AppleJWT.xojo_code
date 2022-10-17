@@ -1,5 +1,5 @@
 #tag Class
-Protected Class AppleJWT
+Class AppleJWT
 	#tag Method, Flags = &h21
 		Private Sub Constructor(validMinutes as integer = 2)
 		  mIssuer = prefs.Value("issuer")

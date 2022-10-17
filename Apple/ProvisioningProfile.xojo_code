@@ -1,5 +1,5 @@
 #tag Class
-Protected Class ProvisioningProfile
+Class ProvisioningProfile
 	#tag Method, Flags = &h0
 		Shared Function CreateFromPlist(plistData as string, sourceFile as FolderItem = nil) As ProvisioningProfile
 		  Try
@@ -97,7 +97,7 @@ Protected Class ProvisioningProfile
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		AppleID As String = "No Apple Connection"
+		AppleID As String = "#kNonAppleID"
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -184,6 +184,10 @@ Protected Class ProvisioningProfile
 	#tag Property, Flags = &h0
 		XcodeManaged As Boolean
 	#tag EndProperty
+
+
+	#tag Constant, Name = kNonAppleID, Type = String, Dynamic = False, Default = \"-", Scope = Public
+	#tag EndConstant
 
 
 	#tag ViewBehavior
