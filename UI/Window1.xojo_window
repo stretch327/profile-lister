@@ -126,7 +126,7 @@ End
 
 	#tag MenuHandler
 		Function profilesDownload() As Boolean Handles profilesDownload.Action
-			Dim dest As FolderItem = FolderItems.ProfilesDirectory
+			Dim dest As FolderItem = Apple.ProfilesDirectory
 			If dest = Nil Then
 			Return False
 			End If
@@ -167,7 +167,7 @@ End
 	#tag Method, Flags = &h21
 		Private Sub RefreshProfileList()
 		  Try
-		    Dim f As FolderItem = FolderItems.ProfilesDirectory
+		    Dim f As FolderItem = Apple.ProfilesDirectory
 		    
 		    Redim mProfiles(-1)
 		    Dim sortOrder() As Integer

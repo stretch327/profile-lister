@@ -1,5 +1,12 @@
 #tag Module
 Protected Module Apple
+	#tag Method, Flags = &h1
+		Protected Function ProfilesDirectory() As FolderItem
+		  return SpecialFolder.UserLibrary.Child("MobileDevice").Child("Provisioning Profiles")
+		End Function
+	#tag EndMethod
+
+
 	#tag ViewBehavior
 		#tag ViewProperty
 			Name="Name"
