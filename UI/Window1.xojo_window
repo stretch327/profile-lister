@@ -180,50 +180,11 @@ End
 		        
 		        data = DefineEncoding(data, encodings.ASCII)
 		        
-		        Dim rx As New RegEx
-		        rx.SearchPattern = "(?msi-U)(<\?xml.*</plist>)"
-		        rx.Options.LineEndType = 4
-		        Dim rm As RegExMatch = rx.Search(data)
-		        If rm = Nil Then
-		          Continue
+		        Dim p As ProvisioningProfile = ProvisioningProfile.CreateFromPlist(data, child)
+		        If p<>Nil Then
+		          mProfiles.Add p
+		          sortOrder.Add p.ExpirationDate.SecondsFrom1970
 		        End If
-		        
-		        Dim plistdata As String = rm.SubExpressionString(1)
-		        
-		        // make sure it's a valid plist file
-		        Dim xml As New XmlDocument
-		        xml.LoadXml(plistdata)
-		        
-		        // extract the parts we want
-		        Dim p As New ProvisioningProfile
-		        p.AppIDName = FindKeyValuePair(plistdata, "AppIDName")
-		        Dim appID As String = FindKeyValuePair(plistdata, "application-identifier")
-		        If appID = "" Then
-		          appID = FindKeyValuePair(plistdata,"com.apple.application-identifier")
-		        End If
-		        
-		        p.ApplicationIdentifier = appID
-		        p.ApplicationIdentifierPrefix = FindKeyValuePair(plistdata, "ApplicationIdentifierPrefix")
-		        p.CreationDate = FindKeyValuePair(plistdata, "CreationDate").StringValue.ConvertUTCDate
-		        p.ExpirationDate = FindKeyValuePair(plistdata, "ExpirationDate").StringValue.ConvertUTCDate
-		        p.Name = FindKeyValuePair(plistdata, "name")
-		        p.Platform = FindKeyValuePair(plistdata, "platform")
-		        p.TeamIDs = FindKeyValuePair(plistdata, "teamids")
-		        p.TeamName = FindKeyValuePair(plistdata, "teamName")
-		        p.TimeToLive = FindKeyValuePair(plistdata, "timeToLive")
-		        p.UUID = FindKeyValuePair(plistdata, "UUID")
-		        p.Version = FindKeyValuePair(plistdata, "version")
-		        p.XcodeManaged = FindKeyValuePair(plistdata, "IsXcodeManaged")
-		        Dim device As String = FindKeyValuePair(plistdata, "ProvisionedDevices")
-		        If device = "" Then
-		          p.DevProfile = False
-		        Else
-		          p.DevProfile = True
-		        End If
-		        p.file = child
-		        mProfiles.Add p
-		        
-		        sortOrder.Add p.ExpirationDate.SecondsFrom1970
 		      Catch ex As NilObjectException
 		        
 		      Catch ex As IOException
