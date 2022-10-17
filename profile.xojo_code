@@ -263,7 +263,7 @@ Protected Class profile
 			Name="AppleID"
 			Visible=false
 			Group="Behavior"
-			InitialValue=""
+			InitialValue="No Apple Connection"
 			Type="String"
 			EditorType="MultiLineEditor"
 		#tag EndViewProperty
