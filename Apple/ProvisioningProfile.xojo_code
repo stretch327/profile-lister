@@ -32,7 +32,6 @@ Class ProvisioningProfile
 		    p.ExpirationDate = FindKeyValuePair(plistdata, "ExpirationDate").StringValue.ConvertUTCDate
 		    p.Name = FindKeyValuePair(plistdata, "name")
 		    p.Platform = FindKeyValuePair(plistdata, "platform")
-		    p.TeamIDs = FindKeyValuePair(plistdata, "TeamIdentifier")
 		    p.TeamName = FindKeyValuePair(plistdata, "teamName")
 		    p.TimeToLive = FindKeyValuePair(plistdata, "timeToLive")
 		    p.UUID = FindKeyValuePair(plistdata, "UUID")
