@@ -17,6 +17,7 @@ Class=ProvisioningProfile;Apple/ProvisioningProfile.xojo_code;&h00000000618847FF
 Folder=UI;UI;&h00000000436B2FFF;&h0000000000000000;false
 DesktopWindow=Window1;UI/Window1.xojo_window;&h0000000040DAD7FF;&h00000000436B2FFF;false
 DesktopWindow=PrefsWindow;UI/PrefsWindow.xojo_window;&h000000000999D7FF;&h00000000436B2FFF;false
+Module=Notes;Notes.xojo_code;&h0000000043232FFF;&h0000000000000000;false
 DefaultWindow=Window1
 AppMenuBar=MainMenuBar
 MajorVersion=1
