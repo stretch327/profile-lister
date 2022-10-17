@@ -560,12 +560,17 @@ End
 		  Dim isExpired As Boolean = (prof.ExpirationDate.SecondsFrom1970 < now.SecondsFrom1970)
 		  Dim isExpiring As Boolean = ((prof.ExpirationDate.SecondsFrom1970 + 86400*7) < now.SecondsFrom1970)
 		  Dim isInvalid As Boolean = prof.Invalid
-		  Dim isOnlyLocal As Boolean = (prof.AppleID = "")
+		  Dim isOnlyLocal As Boolean 
+		  
+		  // if we've got a valid token and the profile doesn't have a corresponding ID, it's only local
+		  If AppleJWT.Create <> Nil And prof.AppleID = "" Then
+		    isOnlyLocal = True
+		  End If
 		  
 		  Select Case column
 		  Case kHelpColumn
 		    Dim icon As Picture
-		    If isExpired Or isInvalid or isOnlyLocal then
+		    If isExpired Or isInvalid Or isOnlyLocal Then
 		      icon = icons.GetIcon("Error")
 		    ElseIf isExpiring Then
 		      icon = icons.GetIcon("Warning")
