@@ -77,14 +77,14 @@ End
 
 #tag WindowCode
 	#tag Event
-		Sub MenuBarSelected()
-		  ProfilesDownload.Enabled = (AppleJWT.Create <> nil)
+		Sub Activated()
+		  RefreshProfileList
 		End Sub
 	#tag EndEvent
 
 	#tag Event
-		Sub Opening()
-		  RefreshProfileList
+		Sub MenuBarSelected()
+		  ProfilesDownload.Enabled = (AppleJWT.Create <> nil)
 		End Sub
 	#tag EndEvent
 
@@ -166,42 +166,52 @@ End
 
 	#tag Method, Flags = &h21
 		Private Sub RefreshProfileList()
-		  Try
-		    Dim f As FolderItem = Apple.ProfilesDirectory
-		    
-		    Redim mProfiles(-1)
-		    Dim sortOrder() As Integer
-		    
-		    For Each child As FolderItem In f.Children
-		      Try
-		        Dim tis As TextInputStream = TextInputStream.Open(child)
-		        Dim data As String = tis.ReadAll(encodings.UTF8)
-		        tis.Close
-		        
-		        data = DefineEncoding(data, encodings.ASCII)
-		        
-		        Dim p As ProvisioningProfile = ProvisioningProfile.CreateFromPlist(data)
-		        If p<>Nil Then
-		          mProfiles.Add p
-		          sortOrder.Add p.ExpirationDate.SecondsFrom1970
+		  // So we don't get two refreshes too close together
+		  If Not mIsRefreshing Then
+		    mIsRefreshing = True
+		    Try
+		      Dim f As FolderItem = Apple.ProfilesDirectory
+		      
+		      Redim mProfiles(-1)
+		      Dim sortOrder() As Integer
+		      
+		      For Each child As FolderItem In f.Children
+		        Dim ext As String = child.name.LastField(".")
+		        If ext <> "mobileprovision" And ext <> "provisionprofile" Then
+		          Continue 
 		        End If
-		      Catch ex As NilObjectException
-		        
-		      Catch ex As IOException
-		        
-		      Catch ex As OutOfBoundsException
-		        
-		      End Try
-		    Next
-		    
-		    sortOrder.SortWith(mProfiles)
-		    
-		    UpdateListbox
-		    
-		    UpdateProfilesWithAPI
-		  Catch ex As NilObjectException
-		    
-		  End Try
+		        Try
+		          Dim tis As TextInputStream = TextInputStream.Open(child)
+		          Dim data As String = tis.ReadAll(encodings.UTF8)
+		          tis.Close
+		          
+		          data = DefineEncoding(data, encodings.ASCII)
+		          
+		          Dim p As ProvisioningProfile = ProvisioningProfile.CreateFromPlist(data)
+		          If p<>Nil Then
+		            mProfiles.Add p
+		            sortOrder.Add p.ExpirationDate.SecondsFrom1970
+		          End If
+		        Catch ex As NilObjectException
+		          
+		        Catch ex As IOException
+		          
+		        Catch ex As OutOfBoundsException
+		          
+		        End Try
+		      Next
+		      
+		      sortOrder.SortWith(mProfiles)
+		      
+		      UpdateListbox
+		      
+		      UpdateProfilesWithAPI
+		    Catch ex As NilObjectException
+		      
+		    Finally
+		      mIsRefreshing = False
+		    End Try
+		  End If
 		End Sub
 	#tag EndMethod
 
@@ -332,6 +342,10 @@ End
 		End Sub
 	#tag EndMethod
 
+
+	#tag Property, Flags = &h21
+		Private mIsRefreshing As Boolean
+	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private mProfiles() As ProvisioningProfile
