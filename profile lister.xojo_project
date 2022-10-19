@@ -20,6 +20,7 @@ DesktopWindow=PrefsWindow;UI/PrefsWindow.xojo_window;&h000000000999D7FF;&h000000
 Module=Notes;Notes.xojo_code;&h0000000043232FFF;&h0000000000000000;false
 Folder=Support;Support;&h00000000365F37FF;&h0000000000000000;false
 Class=Plist2JSON;Support/Plist2JSON.xojo_code;&h00000000753027FF;&h00000000365F37FF;false
+Module=ListboxExtensions;Support/ListboxExtensions.xojo_code;&h000000000C38F7FF;&h00000000365F37FF;false
 DefaultWindow=Window1
 AppMenuBar=MainMenuBar
 MajorVersion=1

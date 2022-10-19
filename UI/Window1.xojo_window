@@ -34,7 +34,7 @@ Begin DesktopWindow Window1
       AllowRowReordering=   False
       Bold            =   False
       ColumnCount     =   10
-      ColumnWidths    =   "*,*,150,40,*,70,*,50,50,25"
+      ColumnWidths    =   "*,*,150,40,*,70,270,50,50,25"
       DefaultRowHeight=   20
       DropIndicatorVisible=   False
       Enabled         =   True
@@ -238,14 +238,20 @@ End
 		Private Sub UpdateListbox()
 		  listbox1.RemoveAllRows
 		  
+		  Dim nameColumnSize As Double
 		  For i As Integer = 0 To UBound(mProfiles)
 		    listbox1.AddRow ""
 		    Dim datum() As String = mProfiles(i).ListboxData
+		    
+		    Dim teamID As String = datum(kTeamColumn)
+		    nameColumnSize = Max(nameColumnSize, listbox1.MeasureText(teamID))
 		    For j As Integer = 0 To  UBound(datum)
 		      listbox1.CellTextAt(listbox1.LastAddedRowIndex, j) = datum(j)
 		    Next
 		    listbox1.RowTagAt(listbox1.LastAddedRowIndex) = mProfiles(i)
 		  Next
+		  
+		  listbox1.SetColumnWidthAt(kTeamColumn, nameColumnSize+12)
 		End Sub
 	#tag EndMethod
 
@@ -356,6 +362,9 @@ End
 	#tag EndConstant
 
 	#tag Constant, Name = kHelpColumn, Type = Double, Dynamic = False, Default = \"9", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kTeamColumn, Type = Double, Dynamic = False, Default = \"4", Scope = Private
 	#tag EndConstant
 
 
