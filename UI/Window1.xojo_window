@@ -441,7 +441,6 @@ End
 	#tag Event
 		Function PaintCellText(g as Graphics, row as Integer, column as Integer, x as Integer, y as Integer) As Boolean
 		  Dim txt As String = Me.CellTextAt(row, column)
-		  Dim changed As Boolean = False
 		  
 		  Dim prof As ProvisioningProfile = Me.RowTagAt(row)
 		  
@@ -456,35 +455,32 @@ End
 		    Dim nextWeek As Double = DateTime.Now.SecondsFrom1970 + 86400 * 7
 		    If itemDate.SecondsFrom1970 < nextWeek Then
 		      g.DrawingColor = ColorGroup.NamedColor("systemOrangeColor")
-		      changed = True
+		      
 		    End If
 		    
 		    // items already expired should be red
 		    If (txt.IndexOf("*") > -1) or itemDate.SecondsFrom1970 < DateTime.Now.SecondsFrom1970 then
 		      g.DrawingColor = ColorGroup.NamedColor("systemRedColor")
-		      changed = True
+		      
 		    End If
 		  Catch ex As RuntimeException
 		    g.DrawingColor = ColorGroup.NamedColor("systemRedColor")
-		    changed = True
+		    
 		  End Try
 		  
 		  // Items that don't exist at Apple should also be flagged, red & italic
 		  If prof.Valid = False Then
 		    g.DrawingColor = ColorGroup.NamedColor("systemRedColor")
 		    g.Italic = True
-		    changed = True
 		  End If
 		  
 		  
 		  Select Case column
 		  Case 8 // xcode
 		    g.Bold = (txt = "Y")
-		    changed = True
 		    
 		  Case 7 // Dev/Dist
 		    g.Bold = (txt = "Dist")
-		    changed = True
 		    
 		  End Select
 		  
@@ -493,11 +489,11 @@ End
 		    g.DrawingColor = ColorGroup.NamedColor("selectedMenuItemTextColor")
 		  End If
 		  
-		  If changed = True Then
-		    g.DrawText txt, x, y
-		  End If
 		  
-		  Return changed
+		  g.FontName = MonospacedFont
+		  g.DrawText txt, x, y
+		  
+		  Return True
 		  
 		  
 		  
