@@ -2,7 +2,7 @@
 Class ProvisioningProfile
 	#tag Method, Flags = &h0
 		Function AssociatedWithTeam(TeamID as String) As Boolean
-		  return mTeamIDs.IndexOf(TeamID)>-1
+		  return TeamIDs.IndexOf(TeamID)>-1
 		End Function
 	#tag EndMethod
 
@@ -281,14 +281,6 @@ Class ProvisioningProfile
 			InitialValue=""
 			Type="Boolean"
 			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="Platforms()"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
-			Type="String"
-			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="ApplicationIdentifierPrefix"
