@@ -36,11 +36,9 @@ Class ProvisioningProfile
 		    p.Name = js.Value("Name")
 		    
 		    Dim platformArray As JSONItem = js.Child("Platform")
-		    Dim platforms() As String
 		    For i As Integer = 0 To platformArray.LastRowIndex
-		      platforms.Add platformArray.ValueAt(i)
+		      p.Platforms.Add platformArray.ValueAt(i)
 		    Next
-		    p.Platform = Join(platforms, ", ")
 		    
 		    p.TeamName = js.Value( "TeamName")
 		    p.TimeToLive = js.Value("TimeToLive")
@@ -52,7 +50,7 @@ Class ProvisioningProfile
 		    // this one's an array
 		    Dim teamIDs As JSONItem = js.Value("TeamIdentifier")
 		    For i As Integer = 0 To teamIDs.Count-1
-		      p.mTeamIDs.add teamIDs.ValueAt(i)
+		      p.TeamIDs.add teamIDs.ValueAt(i)
 		    Next
 		    
 		    Return p
@@ -69,7 +67,7 @@ Class ProvisioningProfile
 		  Dim sa() As String
 		  sa.add UUID
 		  sa.Add "."
-		  If Platform = "OSX" Then
+		  If Platforms.indexOf("OSX") > -1 Then
 		    sa.add "provisionprofile"
 		  Else
 		    sa.Add "mobileprovision"
@@ -89,19 +87,13 @@ Class ProvisioningProfile
 		  Else
 		    arr.Add ExpirationDate.SQLDateTime
 		  End If
-		  arr.Add Platform
+		  arr.Add Join(Platforms, ", ")
 		  arr.Add TeamName
 		  arr.Add TimeToLive.ToString + " Days"
 		  arr.Add UUID
 		  arr.Add If(DevProfile, "Dev", "Dist")
 		  arr.add if(XcodeManaged, "Y", "N")
 		  Return arr
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function TeamIDs() As String()
-		  return mTeamIDs
 		End Function
 	#tag EndMethod
 
@@ -168,16 +160,16 @@ Class ProvisioningProfile
 		Invalid As Boolean
 	#tag EndComputedProperty
 
-	#tag Property, Flags = &h21
-		Private mTeamIDs() As String
-	#tag EndProperty
-
 	#tag Property, Flags = &h0
 		Name As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Platform As String
+		Platforms() As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		TeamIDs() As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -291,7 +283,7 @@ Class ProvisioningProfile
 			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
-			Name="Platform"
+			Name="Platforms()"
 			Visible=false
 			Group="Behavior"
 			InitialValue=""
